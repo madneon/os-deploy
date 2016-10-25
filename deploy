@@ -86,7 +86,7 @@ function update() {
 	fix "$1"
 }
 
-if [ "$MYPATH" == "$D_ROOT/os-deploy/bin" ]; then
+if [ "$MYPATH" == "$D_ROOT/os-deploy" ]; then
 	for p in `cat "$MYPATH/list"`; do
 		if [ ! -d "$D_ROOT/$p" ]; then
 			download "$p"
