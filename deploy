@@ -30,7 +30,7 @@ function deploy() {
 
 	fd="$D_ROOT/os-mods/$os_id/$os_version"
 	if [ -f "$fd/apt/install"]; then
-		apt-get -y install `cat "$fd/apt/install"
+		apt-get -y install `cat "$fd/apt/install"`
 	fi
 
 	if [ -d "$fd/files" ]; then
