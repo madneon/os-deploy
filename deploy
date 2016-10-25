@@ -104,7 +104,7 @@ else
 		sudo install -o root -g root -m 755 -d $D_ROOT
 	fi
 
-	download os-deploy
+	sudo download os-deploy
 
 	# Run downloaded
 	sudo $D_ROOT/os-deploy/bin/deploy
