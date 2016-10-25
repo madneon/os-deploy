@@ -77,7 +77,7 @@ function fix() {
 }
 
 function download() {
-	git clone "https://github.com/madneon/$1.git" "$D_ROOT/$1"
+	sudo git clone "https://github.com/madneon/$1.git" "$D_ROOT/$1"
 	fix "$1"
 }
 
@@ -103,7 +103,7 @@ else
 		sudo install -o root -g root -m 755 -d "$D_ROOT"
 	fi
 
-	sudo download os-deploy
+	download os-deploy
 
 	# Run downloaded
 	sudo "$D_ROOT/os-deploy/bin/deploy"
