@@ -1,0 +1,111 @@
+#!/bin/bash
+
+# Check required programs
+REQUIRED="sudo git install lsb_release readlink dirname"
+for r in $REQUIRED; do
+	which $r > /dev/null
+	if [ $? != 0 ]; then
+		echo Required: $r
+		exit 1
+	fi
+done
+
+set -e
+
+MYPATH=`readlink -f "$0"`
+MYPATH=`dirname "$MYPATH"`
+
+D_ROOT=/opt/lib
+D_DEPLOY=/opt
+DEPLOY_DIRS="bin etc"
+
+export GIT_DISCOVERY_ACROSS_FILESYSTEM=true
+
+# Functions
+function deploy() {
+	set +e
+	# Acquire OS info
+	os_id=`lsb_release -si`
+	os_version=`lsb_release -sr`
+
+	fd="$D_ROOT/os-mods/$os_id/$os_version"
+	if [ -f "$fd/apt/install"]; then
+		apt-get -y install `cat "$fd/apt/install"
+	fi
+
+	if [ -d "$fd/files" ]; then
+			cd "$fd"
+			for f in `find *`; do
+				if [ -f "$f" ]; then
+					if [ -e "/$f" ]; then
+						diff -q "$f" "/$f" > /dev/null
+						if [ "$?" == "0" ]; then
+							continue
+						fi
+					fi
+
+					# copy
+					if [ ! -e "/$f.original" ]; then
+						if [ -e "/$f" ]; then
+							cp "/$f" "/$f.original"
+						fi
+					fi
+					if [ ! -d `dirname "/$f"` ]; then
+						install -o root -g root -m 755 -d `dirname "/$f"`
+					fi
+					cp "$f" "/$f"
+				fi
+			done
+		fi
+	fi
+}
+
+function fix() {
+	for d in $DEPLOY_DIRS; do
+		if [ ! -d "$D_DEPLOY/$d" ]; then
+			install -o root -g root -m 755 -d $D_DEPLOY/$d
+		fi
+
+		if [ -d "$D_ROOT/$1/$d" ]; then
+			for f in `find "$D_ROOT/$1/$d"`; do
+				if [ -f $f ]; then
+					fn=`basename $f`
+					ln -fs $f "$D_DEPLOY/$d/$fn"
+				fi
+			done
+		fi
+	done
+}
+
+function download() {
+	git clone "https://github.com/madneon/$1.git" "$D_ROOT/$1"
+	fix "$1"
+}
+
+function update() {
+	git --git-dir="$D_ROOT/$1/.git" --work-tree="$D_ROOT/$1" pull "$D_ROOT/$1"
+	fix "$1"
+}
+
+if [ "$MYPATH" == "$D_ROOT/os-deploy/bin" ]; then
+	for p in `cat "$MYPATH/list"`; do
+		if [ ! -d "$D_ROOT/$p" ]; then
+			download "$p"
+		else
+			update "$p"
+		fi
+	done
+
+	deploy
+
+else
+	# Download itself
+	if [ ! -d $D_ROOT ]; then
+		sudo install -o root -g root -m 755 -d $D_ROOT
+	fi
+
+	download os-deploy
+
+	# Run downloaded
+	sudo $D_ROOT/os-deploy/bin/deploy
+fi
