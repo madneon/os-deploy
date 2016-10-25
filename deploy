@@ -29,7 +29,7 @@ function deploy() {
 	os_version=`lsb_release -sr`
 
 	fd="$D_ROOT/os-mods/$os_id/$os_version"
-	if [ -f "$fd/apt/install"]; then
+	if [ -f "$fd/apt/install" ]; then
 		apt-get -y install `cat "$fd/apt/install"`
 	fi
 
