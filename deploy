@@ -44,15 +44,18 @@ function deploy() {
 					fi
 				fi
 
-				# copy
-				if [ ! -e "/$f.original" ]; then
-					if [ -e "/$f" ]; then
-						cp "/$f" "/$f.original"
-					fi
-				fi
+				# save original file
 				if [ ! -d `dirname "/$f"` ]; then
 					install -o root -g root -m 755 -d `dirname "/$f"`
+				else
+					if [ ! -e "/$f.original" ]; then
+						if [ -e "/$f" ]; then
+							mv "/$f" "/$f.original"
+						fi
+					fi
 				fi
+
+				# deploy
 				cp "$f" "/$f"
 			fi
 		done
