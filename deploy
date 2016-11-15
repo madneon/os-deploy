@@ -19,6 +19,8 @@ D_ROOT=/opt/lib
 D_DEPLOY=/opt
 DEPLOY_DIRS="bin etc"
 
+LIST="os-mods shell-utils shell-wrappers"
+
 export GIT_DISCOVERY_ACROSS_FILESYSTEM=true
 
 # Functions
@@ -90,7 +92,11 @@ function update() {
 }
 
 if [ "$MYPATH" == "$D_ROOT/os-deploy" ]; then
-	for p in `cat "$MYPATH/list"`; do
+	if [ -f "$MYPATH/list" ]; then
+		LIST=`cat "$MYPATH/list"`
+	fi
+
+	for p in $LIST; do
 		if [ ! -d "$D_ROOT/$p" ]; then
 			download "$p"
 		else
@@ -99,7 +105,6 @@ if [ "$MYPATH" == "$D_ROOT/os-deploy" ]; then
 	done
 
 	deploy
-
 else
 	# Download itself
 	if [ ! -d "$D_ROOT" ]; then
@@ -109,5 +114,5 @@ else
 	download os-deploy
 
 	# Run downloaded
-	sudo "$D_ROOT/os-deploy/bin/deploy"
+	sudo "$D_ROOT/os-deploy/deploy"
 fi
