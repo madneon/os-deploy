@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Copyright © 2016 by madneon
+# http://madneon.com
+
 # Check required programs
 REQUIRED="sudo git install lsb_release readlink dirname"
 for r in $REQUIRED; do
@@ -116,3 +119,5 @@ else
 	# Run downloaded
 	sudo "$D_ROOT/os-deploy/deploy"
 fi
+
+# madneon 2016-11-16
