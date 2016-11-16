@@ -23,6 +23,7 @@ D_DEPLOY=/opt
 DEPLOY_DIRS="bin etc"
 
 LIST="os-mods shell-utils shell-wrappers"
+EDITIONS=""
 
 export GIT_DISCOVERY_ACROSS_FILESYSTEM=true
 
@@ -33,10 +34,30 @@ function deploy() {
 	os_id=`lsb_release -si`
 	os_version=`lsb_release -sr`
 
-	fd="$D_ROOT/os-mods/$os_id/$os_version"
-	if [ -f "$fd/apt/install" ]; then
-		apt-get -y install `cat "$fd/apt/install"`
+	if [ -f "$MYPATH/editions" ]; then
+		EDITIONS=`cat "$MYPATH/editions"`
+	else
+		# Try to determine OS editions
+		dpkg -l ubuntu-server > /dev/null
+		if [ $? == 0 ]; then
+			EDITIONS="server"
+		fi
+
+		dpkg -l xorg > /dev/null
+		if [ $? == 0 ]; then
+			EDITIONS="desktop"
+		fi
+
+		# Save
+		echo "$EDITIONS" > "$MYPATH/editions"
 	fi
+
+	fd="$D_ROOT/os-mods/$os_id/$os_version"
+	for e in $EDITIONS; do
+		if [ -f "$fd/apt/install" ]; then
+			apt-get -y install `cat "$fd/apt/install-$e"`
+		fi
+	done
 
 	if [ -d "$fd/files" ]; then
 		cd "$fd/files"
