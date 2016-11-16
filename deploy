@@ -87,7 +87,7 @@ function download() {
 }
 
 function update() {
-	git --git-dir="$D_ROOT/$1/.git" --work-tree="$D_ROOT/$1" pull "$D_ROOT/$1"
+	git --git-dir="$D_ROOT/$1/.git" --work-tree="$D_ROOT/$1" pull
 	fix "$1"
 }
 
