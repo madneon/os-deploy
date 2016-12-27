@@ -34,8 +34,8 @@ function deploy() {
 	os_id=`lsb_release -si`
 	os_version=`lsb_release -sr`
 
-	if [ -f "$MYPATH/editions" ]; then
-		EDITIONS=`cat "$MYPATH/editions"`
+	if [ -f "$MYPATH/../editions" ]; then
+		EDITIONS=`cat "$MYPATH/../editions"`
 	else
 		# Try to determine OS editions
 		dpkg -l ubuntu-server > /dev/null
@@ -49,7 +49,7 @@ function deploy() {
 		fi
 
 		# Save
-		echo "$EDITIONS" > "$MYPATH/editions"
+		echo "$EDITIONS" > "$MYPATH/../editions"
 	fi
 
 	fd="$D_ROOT/os-mods/$os_id/$os_version"
@@ -115,7 +115,7 @@ function update() {
 	fix "$1"
 }
 
-if [ "$MYPATH" == "$D_ROOT/os-deploy" ]; then
+if [ "$MYPATH" == "$D_ROOT/os-deploy/bin" ]; then
 	if [ -f "$MYPATH/list" ]; then
 		LIST=`cat "$MYPATH/list"`
 	fi
@@ -138,7 +138,7 @@ else
 	download os-deploy
 
 	# Run downloaded
-	sudo "$D_ROOT/os-deploy/deploy"
+	sudo "$D_ROOT/os-deploy/bin/deploy"
 fi
 
 # madneon 2016-11-16
