@@ -116,8 +116,8 @@ function update() {
 }
 
 if [ "$MYPATH" == "$D_ROOT/os-deploy/bin" ]; then
-	if [ -f "$MYPATH/list" ]; then
-		LIST=`cat "$MYPATH/list"`
+	if [ -f "$MYPATH/../list" ]; then
+		LIST=`cat "$MYPATH/../list"`
 	fi
 
 	for p in $LIST; do
