@@ -91,14 +91,14 @@ function deploy() {
 function fix() {
 	for d in $DEPLOY_DIRS; do
 		if [ ! -d "$D_DEPLOY/$d" ]; then
-			install -o root -g root -m 755 -d $D_DEPLOY/$d
+			sudo install -o root -g root -m 755 -d $D_DEPLOY/$d
 		fi
 
 		if [ -d "$D_ROOT/$1/$d" ]; then
 			for f in `find "$D_ROOT/$1/$d"`; do
 				if [ -f $f ]; then
 					fn=`basename $f`
-					ln -fs $f "$D_DEPLOY/$d/$fn"
+					sudo ln -fs $f "$D_DEPLOY/$d/$fn"
 				fi
 			done
 		fi
@@ -111,7 +111,7 @@ function download() {
 }
 
 function update() {
-	git --git-dir="$D_ROOT/$1/.git" --work-tree="$D_ROOT/$1" pull
+	sudo git --git-dir="$D_ROOT/$1/.git" --work-tree="$D_ROOT/$1" pull
 	fix "$1"
 }
 
