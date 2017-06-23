@@ -54,7 +54,7 @@ function deploy() {
 
 	fd="$D_ROOT/os-mods/$os_id/$os_version"
 	for e in $EDITIONS; do
-		if [ -f "$fd/apt/install" ]; then
+		if [ -f "$fd/apt/install-$e" ]; then
 			sudo apt-get -y install `cat "$fd/apt/install-$e"`
 		fi
 	done
