@@ -61,13 +61,13 @@ function deploy() {
 		fi
 
 		# Save
-		echo "$EDITIONS" > "$MYPATH/../editions"
+		sudo echo "$EDITIONS" > "$MYPATH/../editions"
 	fi
 
 	fd="$D_ROOT/os-mods/$os_id/$os_version"
 	for e in $EDITIONS; do
-		if [ -f "$fd/apt/install" ]; then
-			apt-get -y install `cat "$fd/apt/install-$e"`
+		if [ -f "$fd/apt/install-$e" ]; then
+			sudo apt-get -y install `cat "$fd/apt/install-$e"`
 		fi
 	done
 
@@ -84,17 +84,17 @@ function deploy() {
 
 				# save original file
 				if [ ! -d `dirname "/$f"` ]; then
-					install -o root -g root -m 755 -d `dirname "/$f"`
+					sudo install -o root -g root -m 755 -d `dirname "/$f"`
 				else
 					if [ ! -e "/$f.original" ]; then
 						if [ -e "/$f" ]; then
-							mv "/$f" "/$f.original"
+							sudo mv "/$f" "/$f.original"
 						fi
 					fi
 				fi
 
 				# deploy
-				cp "$f" "/$f"
+				sudo cp "$f" "/$f"
 			fi
 		done
 	fi
@@ -103,14 +103,14 @@ function deploy() {
 function fix() {
 	for d in $DEPLOY_DIRS; do
 		if [ ! -d "$D_DEPLOY/$d" ]; then
-			install -o root -g root -m 755 -d $D_DEPLOY/$d
+			sudo install -o root -g root -m 755 -d $D_DEPLOY/$d
 		fi
 
 		if [ -d "$D_ROOT/$1/$d" ]; then
 			for f in `find "$D_ROOT/$1/$d"`; do
 				if [ -f $f ]; then
 					fn=`basename $f`
-					ln -fs $f "$D_DEPLOY/$d/$fn"
+					sudo ln -fs $f "$D_DEPLOY/$d/$fn"
 				fi
 			done
 		fi
@@ -123,7 +123,7 @@ function download() {
 }
 
 function update() {
-	git --git-dir="$D_ROOT/$1/.git" --work-tree="$D_ROOT/$1" pull
+	sudo git --git-dir="$D_ROOT/$1/.git" --work-tree="$D_ROOT/$1" pull
 	fix "$1"
 }
 
