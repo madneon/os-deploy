@@ -38,14 +38,26 @@ function deploy() {
 		EDITIONS=`cat "$MYPATH/../editions"`
 	else
 		# Try to determine OS editions
-		dpkg -l ubuntu-server > /dev/null
-		if [ $? == 0 ]; then
-			EDITIONS="server"
-		fi
 
-		dpkg -l xorg > /dev/null
-		if [ $? == 0 ]; then
-			EDITIONS="desktop"
+		if [ "$os_id"X == "Ubuntu"X ]; then
+			dpkg -l ubuntu-server > /dev/null
+			if [ $? == 0 ]; then
+				EDITIONS="server"
+			fi
+
+			dpkg -l xorg > /dev/null
+			if [ $? == 0 ]; then
+				EDITIONS="desktop"
+			fi
+		elif [ "$os_id"X == "Raspbian"X ]; then
+			dpkg -l x11-common > /dev/null
+			if [ $? == 0 ]; then
+				EDITIONS="desktop"
+			else
+				EDITIONS="server"
+			fi
+		else
+			echo "Unknown OS edition, please set \"editions\" file manually."
 		fi
 
 		# Save
