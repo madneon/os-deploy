@@ -39,12 +39,12 @@ function deploy() {
 	else
 		# Try to determine OS editions
 		if [ "$os_id"X == "Ubuntu"X ]; then
-			dpkg -l ubuntu-server > /dev/null
+			dpkg --get-selections|grep ubuntu-server > /dev/null
 			if [ $? == 0 ]; then
 				EDITIONS="server"
 			fi
 
-			dpkg -l xorg > /dev/null
+			dpkg --get-selections|grep ubuntu-desktop > /dev/null
 			if [ $? == 0 ]; then
 				EDITIONS="desktop"
 			fi
