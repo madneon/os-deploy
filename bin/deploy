@@ -63,10 +63,15 @@ function deploy() {
 		sudo echo "$EDITIONS" > "$MYPATH/../editions"
 	fi
 
+	if [ -x "$fd/run/before" ]; then
+		. "$fd/run/before"
+	fi
+
 	fd="$D_ROOT/os-mods/$os_id/$os_version"
 	for e in $EDITIONS; do
 		if [ -f "$fd/apt/install-$e" ]; then
 			sudo apt-get -y install `cat "$fd/apt/install-$e"`
+			sudo apt-get -y purge `cat "$fd/apt/remove-$e"`
 		fi
 	done
 
@@ -96,6 +101,10 @@ function deploy() {
 				sudo cp "$f" "/$f"
 			fi
 		done
+	fi
+
+	if [ -x "$fd/run/after" ]; then
+		. "$fd/run/after"
 	fi
 }
 
