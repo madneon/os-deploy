@@ -43,12 +43,11 @@ function deploy() {
 			if [ $? == 0 ]; then
 				EDITIONS="server"
 			fi
-
 			dpkg --get-selections|grep ubuntu-desktop > /dev/null
 			if [ $? == 0 ]; then
 				EDITIONS="desktop"
 			fi
-		elif [ "$os_id"X == "Raspbian"X ]; then
+		elif [ "$os_id"X == "Raspbian"X -o "$os_id"X == "Debian"X ]; then
 			dpkg -l x11-common > /dev/null
 			if [ $? == 0 ]; then
 				EDITIONS="desktop"
