@@ -69,10 +69,12 @@ function deploy() {
 	fd="$D_ROOT/os-mods/$os_id/$os_version"
 	for e in $EDITIONS; do
 		if [ -f "$fd/apt/install-$e" ]; then
-			sudo apt-get -y install `cat "$fd/apt/install-$e"`
-			sudo apt-get -y purge `cat "$fd/apt/remove-$e"`
+			sudo apt -y install `cat "$fd/apt/install-$e"`
+			sudo apt -y purge `cat "$fd/apt/remove-$e"`
 		fi
 	done
+
+	sudo apt -y autoremove
 
 	if [ -d "$fd/files" ]; then
 		cd "$fd/files"
@@ -160,4 +162,4 @@ else
 	sudo "$D_ROOT/os-deploy/bin/deploy"
 fi
 
-# madneon 2016-11-16
+# madneon 2016-11-16, 2018-06-17
