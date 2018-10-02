@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright © 2016 by madneon
+# Copyright © 2016-2018 by madneon
 # http://madneon.com
 
 # Check required programs
@@ -74,6 +74,7 @@ function deploy() {
 		fi
 	done
 
+	sudo apt update
 	sudo apt -y autoremove
 
 	if [ -d "$fd/files" ]; then
@@ -91,7 +92,10 @@ function deploy() {
 				if [ ! -d `dirname "/$f"` ]; then
 					sudo install -o root -g root -m 755 -d `dirname "/$f"`
 				else
-					if [ ! -e "/$f.original" ]; then
+					if [ -e "/$f.original" ]; then
+						# dont overwrite
+						continue
+					else
 						if [ -e "/$f" ]; then
 							sudo mv "/$f" "/$f.original"
 						fi
@@ -162,4 +166,4 @@ else
 	sudo "$D_ROOT/os-deploy/bin/deploy"
 fi
 
-# madneon 2016-11-16, 2018-06-17
+# madneon 2016-11-16, 2018-06-17, 2018-10-02
