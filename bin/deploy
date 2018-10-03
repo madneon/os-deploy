@@ -28,6 +28,44 @@ EDITIONS=""
 export GIT_DISCOVERY_ACROSS_FILESYSTEM=true
 
 # Functions
+function files() {
+	if [ -d "$1" ]; then
+		cd "$1"
+		for f in `find .`; do
+			f=`echo $f|cut -c2-`
+			if [ -f "$1$f" ]; then
+				if [ -e "$2$f" ]; then
+					diff -q "$1$f" "$2$f" > /dev/null
+					if [ "$?" == "0" ]; then
+						echo "SKIPING $2$f"
+						continue
+					fi
+				fi
+
+				# save original file
+				if [ ! -d `dirname "$2$f"` ]; then
+					sudo install -o $3 -g $4 -m 755 -d `dirname "$2$f"`
+				else
+					if [ -e "$2$f.original" ]; then
+						# dont overwrite
+						echo "SKIPING $2$f"
+						continue
+					else
+						if [ -e "$2$f" ]; then
+							sudo mv "$2$f" "$2$f.original"
+						fi
+					fi
+				fi
+
+				# deploy
+				echo "$2$f"
+				sudo cp "$1$f" "$2$f"
+				sudo chown "$3"."$4" "$2$f"
+			fi
+		done
+	fi
+}
+
 function deploy() {
 	set +e
 	# Acquire OS info
@@ -56,16 +94,19 @@ function deploy() {
 			fi
 		else
 			echo "Unknown OS edition, please set \"editions\" file manually."
+			read junk
 		fi
 
 		# Save
 		sudo echo "$EDITIONS" > "$MYPATH/../editions"
 	fi
 
+	# before-script
 	if [ -x "$fd/run/before" ]; then
 		. "$fd/run/before"
 	fi
 
+	# apt
 	fd="$D_ROOT/os-mods/$os_id/$os_version"
 	for e in $EDITIONS; do
 		if [ -f "$fd/apt/install-$e" ]; then
@@ -77,37 +118,31 @@ function deploy() {
 	sudo apt update
 	sudo apt -y autoremove
 
-	if [ -d "$fd/files" ]; then
-		cd "$fd/files"
-		for f in `find *`; do
-			if [ -f "$f" ]; then
-				if [ -e "/$f" ]; then
-					diff -q "$f" "/$f" > /dev/null
-					if [ "$?" == "0" ]; then
-						continue
-					fi
-				fi
+	# deploy /
+	files "$fd/files" "" 0 0
 
-				# save original file
-				if [ ! -d `dirname "/$f"` ]; then
-					sudo install -o root -g root -m 755 -d `dirname "/$f"`
-				else
-					if [ -e "/$f.original" ]; then
-						# dont overwrite
-						continue
-					else
-						if [ -e "/$f" ]; then
-							sudo mv "/$f" "/$f.original"
-						fi
-					fi
-				fi
-
-				# deploy
-				sudo cp "$f" "/$f"
-			fi
-		done
+	# deploy skel to users
+	UID_MIN=$((`grep ^UID_MIN /etc/login.defs|cut -f2-` + 0))
+	UID_MAX=$((`grep ^UID_MAX /etc/login.defs|cut -f2-` + 0))
+	if [ -z $UID_MIN ]; then
+		UID_MIN=1000
+	fi
+	if [ -z $UID_MAX ]; then
+		UID_MAX=60000
 	fi
 
+	for l in `cut -f1,3,4,6 -d: /etc/passwd`; do
+		u=`echo $l|cut -f1 -d:`
+		uid=`echo $l|cut -f2 -d:`
+		gid=`echo $l|cut -f3 -d:`
+		h=`echo $l|cut -f4 -d:`
+
+		if [ -n "$uid" -a "$uid" -ge $UID_MIN -a "$uid" -le $UID_MAX ]; then
+			files "/etc/skel" "$h" "$uid" "$gid"
+		fi
+	done
+
+	# after-script
 	if [ -x "$fd/run/after" ]; then
 		. "$fd/run/after"
 	fi
