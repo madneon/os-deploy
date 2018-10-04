@@ -5,13 +5,17 @@
 
 # Check required programs
 REQUIRED="sudo git install lsb_release readlink dirname"
+MISSING=""
 for r in $REQUIRED; do
 	which $r > /dev/null
 	if [ $? != 0 ]; then
-		echo Required: $r
-		exit 1
+		MISSING="$MISSING $r"
 	fi
 done
+if [ -n "$MISSING" ]; then
+	echo Required: $MISSING
+	exit 1
+fi
 
 set -e
 
