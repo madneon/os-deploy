@@ -90,7 +90,7 @@ function deploy() {
 				EDITIONS="desktop"
 			fi
 		elif [ "$os_id"X == "Raspbian"X -o "$os_id"X == "Debian"X ]; then
-			dpkg -l x11-common > /dev/null
+			tasksel --list-tasks|grep -q "i desktop"
 			if [ $? == 0 ]; then
 				EDITIONS="desktop"
 			else
