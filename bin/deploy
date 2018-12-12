@@ -125,6 +125,13 @@ function deploy() {
 	# deploy /
 	files "$fd/files" "" 0 0
 
+	# after-script
+	if [ -x "$fd/run/after" ]; then
+		. "$fd/run/after"
+	fi
+}
+
+function deploy_users() {
 	# deploy skel to users
 	UID_MIN=$((`grep ^UID_MIN /etc/login.defs|cut -f2-` + 0))
 	UID_MAX=$((`grep ^UID_MAX /etc/login.defs|cut -f2-` + 0))
@@ -142,14 +149,10 @@ function deploy() {
 		h=`echo $l|cut -f4 -d:`
 
 		if [ -n "$uid" -a "$uid" -ge $UID_MIN -a "$uid" -le $UID_MAX ]; then
+			echo "User: $u"
 			files "/etc/skel" "$h" "$uid" "$gid"
 		fi
 	done
-
-	# after-script
-	if [ -x "$fd/run/after" ]; then
-		. "$fd/run/after"
-	fi
 }
 
 function fix() {
@@ -203,6 +206,8 @@ else
 
 	# Run downloaded
 	sudo "$D_ROOT/os-deploy/bin/deploy"
+
+	deploy_users
 fi
 
 # madneon 2016-11-16, 2018-06-17, 2018-10-02
