@@ -24,7 +24,7 @@ MYPATH=`dirname "$MYPATH"`
 
 D_ROOT=/opt/lib
 D_DEPLOY=/opt
-DEPLOY_DIRS="bin etc share"
+DEPLOY_DIRS="bin etc"
 
 LIST="os-mods shell-utils shell-wrappers"
 EDITIONS=""
@@ -163,9 +163,9 @@ function fix() {
 
 		if [ -d "$D_ROOT/$1/$d" ]; then
 			for f in `find "$D_ROOT/$1/$d"`; do
-				if [ -f $f ]; then
-					fn=`basename $f`
-					sudo ln -fs $f "$D_DEPLOY/$d/$fn"
+				if [ -e $f ]; then
+					# fn=`basename $f`
+					sudo ln -fs $f "$D_DEPLOY/$d/$f"
 				fi
 			done
 		fi
