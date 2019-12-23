@@ -24,7 +24,7 @@ MYPATH=`dirname "$MYPATH"`
 
 D_ROOT=/opt/lib
 D_DEPLOY=/opt
-DEPLOY_DIRS="bin etc"
+DEPLOY_DIRS="bin etc share"
 
 LIST="os-mods shell-utils shell-wrappers"
 EDITIONS=""
