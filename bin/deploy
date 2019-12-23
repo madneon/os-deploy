@@ -24,7 +24,7 @@ MYPATH=`dirname "$MYPATH"`
 
 D_ROOT=/opt/lib
 D_DEPLOY=/opt
-DEPLOY_DIRS="bin etc"
+DEPLOY_DIRS="bin etc share"
 
 LIST="os-mods shell-utils shell-wrappers"
 EDITIONS=""
@@ -158,17 +158,17 @@ function deploy_users() {
 function fix() {
 	for d in $DEPLOY_DIRS; do
 		if [ ! -d "$D_DEPLOY/$d" ]; then
-			sudo install -o root -g root -m 755 -d $D_DEPLOY/$d
+			sudo install -o root -g root -m 755 -d "$D_DEPLOY/$d"
 		fi
 
 		if [ -d "$D_ROOT/$1/$d" ]; then
-			for f in `find "$D_ROOT/$1/$d"`; do
-				if [ -e $f ]; then
-					# fn=`basename $f`
-					sudo ln -fs $f "$D_DEPLOY/$d/$f"
+			for f in "$D_ROOT/$1/$d/"*; do
+				if [ ! -e "$D_DEPLOY/$d/$fn" ]; then
+					sudo ln -fs $f "$D_DEPLOY/$d/$fn"
 				fi
 			done
 		fi
+
 	done
 }
 
@@ -210,4 +210,4 @@ else
 	deploy_users
 fi
 
-# madneon 2016-11-16, 2018-06-17, 2018-10-02
+# madneon 2016-11-16, 2018-06-17, 2018-10-02, 2019-12-23
