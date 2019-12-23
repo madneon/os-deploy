@@ -163,6 +163,7 @@ function fix() {
 
 		if [ -d "$D_ROOT/$1/$d" ]; then
 			for f in "$D_ROOT/$1/$d/"*; do
+				fn=`basename $f`
 				if [ ! -e "$D_DEPLOY/$d/$fn" ]; then
 					sudo ln -fs $f "$D_DEPLOY/$d/$fn"
 				fi
