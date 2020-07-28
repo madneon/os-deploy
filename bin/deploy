@@ -110,6 +110,8 @@ function deploy() {
 		. "$fd/run/before"
 	fi
 
+	sudo apt update
+
 	# apt
 	fd="$D_ROOT/os-mods/$os_id/$os_version"
 	for e in $EDITIONS; do
@@ -119,8 +121,9 @@ function deploy() {
 		fi
 	done
 
-	sudo apt update
 	sudo apt -y autoremove
+	sudo rm /var/cache/apt/archives/*.deb
+	sudo rm -rf /var/cache/apt/archives/partial
 
 	# deploy /
 	files "$fd/files" "" 0 0
@@ -169,7 +172,6 @@ function fix() {
 				fi
 			done
 		fi
-
 	done
 }
 
