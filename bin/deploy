@@ -195,6 +195,7 @@ if [ "$MYPATH" == "$D_ROOT/os-deploy/bin" ]; then
 	fi
 
 	update_origin "os-deploy"
+	update "os-deploy"
 
 	for p in $LIST; do
 		if [ ! -d "$D_ROOT/$p" ]; then
