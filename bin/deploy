@@ -176,7 +176,7 @@ function fix() {
 }
 
 function download() {
-	sudo git clone "https://github.com/madneon/$1.git" "$D_ROOT/$1"
+	sudo git clone "https://git.madneon.com/OS/$1.git" "$D_ROOT/$1"
 	fix "$1"
 }
 
@@ -185,15 +185,22 @@ function update() {
 	fix "$1"
 }
 
+function update_origin() {
+	sudo git --git-dir="$D_ROOT/$1/.git" --work-tree="$D_ROOT/$1" remote set-url origin "https://git.madneon.com/OS/$1.git"
+}
+
 if [ "$MYPATH" == "$D_ROOT/os-deploy/bin" ]; then
 	if [ -f "$MYPATH/../list" ]; then
 		LIST=`cat "$MYPATH/../list"`
 	fi
 
+	update_origin "os-deploy"
+
 	for p in $LIST; do
 		if [ ! -d "$D_ROOT/$p" ]; then
 			download "$p"
 		else
+			update_origin "$p"
 			update "$p"
 		fi
 	done
