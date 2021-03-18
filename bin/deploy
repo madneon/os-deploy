@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright © 2016-2018 by madneon
+# Copyright © 2016-2021 by madneon
 # http://madneon.com
 
 # Check required programs
@@ -30,6 +30,12 @@ LIST="os-mods shell-utils shell-wrappers"
 EDITIONS=""
 
 export GIT_DISCOVERY_ACROSS_FILESYSTEM=true
+
+if [ "$1" == "-u" ] || [ "$1" == "--update" ]; then
+	do_deploy=0
+else
+	do_deploy=1
+fi
 
 # Functions
 function files() {
@@ -206,19 +212,22 @@ if [ "$MYPATH" == "$D_ROOT/os-deploy/bin" ]; then
 		fi
 	done
 
-	deploy
+	if [ $do_deploy == 1 ]; then
+		deploy
+	fi
 else
 	# Download itself
 	if [ ! -d "$D_ROOT" ]; then
 		sudo install -o root -g root -m 755 -d "$D_ROOT"
 	fi
 
-	download os-deploy
+	if [ ! -d "$D_ROOT/os-deploy" ]; then
+		download os-deploy
+	fi
 
-	# Run downloaded
 	sudo "$D_ROOT/os-deploy/bin/deploy"
 
 	deploy_users
 fi
 
-# madneon 2016-11-16, 2018-06-17, 2018-10-02, 2019-12-23
+# madneon 2016-11-16, 2018-06-17, 2018-10-02, 2019-12-23, 2021-03-18
