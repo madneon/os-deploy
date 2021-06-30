@@ -187,7 +187,7 @@ function download() {
 }
 
 function update() {
-	sudo git --git-dir="$D_ROOT/$1/.git" --work-tree="$D_ROOT/$1" --quiet pull
+	sudo git --git-dir="$D_ROOT/$1/.git" --work-tree="$D_ROOT/$1" pull > /dev/null
 	fix "$1"
 }
 
